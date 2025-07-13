@@ -1077,7 +1077,7 @@
           const quantityInput = document.createElement("input")
           quantityInput.type = "number"
           quantityInput.className = "quantity-input"
-          quantityInput.placeholder = "Qty"
+          quantityInput.placeholder = "Pair"
           quantityInput.value = item.quantity ?? ""
           quantityInput.addEventListener("input", (e) => {
             item.quantity = parseInt(e.target.value) || null
