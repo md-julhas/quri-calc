@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QuriCalc</title>
+    <style>
+      /* CSS Variables */
+      :root {
+        --primary: #6d8c05;
+        --secondary: #b3084f;
+        --danger: #6d8c05;
+
+        --bg: #060a17;
+        --card-bg: #0c1325;
+        --text: #989a9c;
+        --border: #2d3140;
+        --light-border: #3a4155;
+        --lighter-bg: #1a2a4d;
+
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+        --radius-sm: 0.25rem;
+        --radius: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+
+        --text-sm: 0.875rem;
+        --text-base: 1rem;
+        --text-lg: 1.125rem;
+        --text-xl: 1.25rem;
+        --text-input: 22px;
+        --text-2xl: 1.5rem;
+        --text-3xl: 1.875rem;
+      }
+
+      /* Base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        font-size: var(--text-base);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
+      body {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0.3rem;
+      }
+
+      /* Menu tabs */
+      .menu {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        background-color: var(--card-bg);
+        border-radius: var(--radius-md);
+        padding: 0.5rem 0.5rem;
+      }
+
+      .menu button {
+        flex: 1;
+        padding: 1rem;
+        background: var(--bg);
+        color: var(--text);
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        font-size: var(--text-base);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 0;
+      }
+
+      .menu button.active {
+        background: var(--primary);
+        color: white;
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* Card styling */
+      .card {
+        background-color: var(--card-bg);
+        border-radius: var(--radius-md);
+        padding: 0.5rem 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .seller-input {
+        width: 100%;
+      }
+
+      /* Input row */
+      .input-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+
+      input[type="number"],
+      input[type="text"],
+      input[type="search"] {
+        flex: 1;
+        padding: 0.6rem;
+        font-size: var(--text-input);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--bg);
+        transition: all 0.2s;
+        font-weight: bold;
+        background-color: var(--bg);
+        color: var(--primary);
+      }
+
+      input[type="number"]:focus,
+      input[type="text"]:focus,
+      input[type="search"]:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      input.quantity-input {
+        max-width: 100px;
+      }
+      input.price-input {
+        width: 100%;
+      }
+
+      .bulk-options {
+        display: flex;
+        gap: 0.3rem;
+        margin: 0;
+      }
+
+      .bulk-btn {
+        margin: 0;
+        padding: 0.9rem 0.5rem;
+        font-size: var(--text-sm);
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        background: #101733;
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .bulk-btn.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .bulk-btn.active.bulk-8-btn {
+        background: var(--secondary);
+        color: white;
+      }
+
+      /* Buttons */
+      button {
+        padding: 1rem 1rem;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        border: none;
+        font-size: var(--text-base);
+        cursor: pointer;
+        background: var(--primary);
+        color: white;
+        width: 100%;
+        margin: 1rem 0rem;
+        transition: all 0.2s;
+        box-shadow: var(--shadow-sm);
+      }
+
+      button.secondary {
+        background: purple;
+      }
+      #add-btn {
+        background-color: var(--card-bg);
+        color: var(--text);
+      }
+
+      button.danger {
+        background: var(--danger);
+      }
+
+      button.warning {
+        background: var(--secondary);
+      }
+
+      /* Summary card */
+      .summary {
+        margin-top: 1rem;
+        background-color: var(--card-bg);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        text-align: right;
+      }
+
+      .summary p,
+      .summary div {
+        font-size: var(--text-xl);
+        margin: 0.5rem 0;
+        color: var(--text);
+      }
+
+      .summary .total {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      #final-total {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--primary);
+        margin-top: 0.75rem;
+      }
+
+      /* Calculator item results */
+      .calculator-item-results {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        padding-top: 0.5rem;
+        border-top: 1px dashed var(--border);
+      }
+
+      .calculator-item-results > div {
+        text-align: center;
+      }
+
+      .calculator-item-results .label {
+        font-size: 0.7rem;
+        color: var(--border);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+
+      .value {
+        font-weight: bold;
+      }
+
+      .calculator-item-results .value {
+        font-weight: 700;
+        color: var(--text);
+        font-size: var(--text-xl);
+      }
+
+      /* List view styles */
+      #list-view,
+      #buyers-view {
+        display: none;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .list-item {
+        background-color: var(--card-bg);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        -webkit-tap-highlight-color: transparent;
+        border: 1px solid transparent;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .list-item:hover {
+        background-color: #101733;
+        border-color: var(--primary);
+      }
+
+      .list-item:active {
+        transform: scale(0.98);
+        background-color: #1a2a4d;
+        border-color: var(--primary);
+      }
+
+      .list-item.active-tap {
+        background-color: #1a2a4d !important;
+        transform: scale(0.98);
+        transition: all 0.1s ease;
+      }
+
+      .list-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+      }
+
+      .list-item-header .seller-name,
+      .list-item-header .buyer-name {
+        font-size: var(--text-lg);
+        color: var(--primary);
+      }
+
+      .list-item-header .seller-name.paid {
+        color: var(--secondary);
+      }
+
+      /* Search bar */
+      .search-container {
+        background-color: var(--card-bg);
+        border-radius: var(--radius-md);
+        padding: 0.5rem;
+      }
+
+      .search-input {
+        width: 100%;
+      }
+
+      input[type="search"]::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+        height: 24px;
+        width: 24px;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23989a9c"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>')
+          no-repeat center center;
+        background-size: contain;
+        cursor: pointer;
+      }
+
+      input[type="search"]::-ms-clear {
+        display: none;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        overflow-y: auto;
+        padding: 1rem;
+        animation: fadeIn 0.3s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal-content {
+        background-color: var(--card-bg);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        max-width: 600px;
+        margin: 0 auto;
+        box-shadow: var(--shadow-lg);
+        transform: translateY(20px);
+        animation: slideIn 0.3s ease-out forwards;
+        animation-delay: 0.1s;
+        opacity: 0;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--light-border);
+        position: relative;
+      }
+
+      .modal-title {
+        font-size: var(--text-2xl);
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      /* "Paid" Badge */
+      .modal-title.paid::after {
+        content: "PAID";
+        position: absolute;
+        top: -0.5rem;
+        right: 0;
+        background-color: var(--secondary);
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: var(--radius-sm);
+        font-size: var(--text-sm);
+        font-weight: 600;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--text);
+        font-size: var(--text-3xl);
+        cursor: pointer;
+        padding: 0.5rem;
+        width: fit-content;
+        transition: color 0.2s ease;
+      }
+
+      .modal-close:hover {
+        color: var(--secondary);
+      }
+
+      .modal-body {
+        margin-bottom: 1.5rem;
+        max-height: 50vh;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+      }
+
+      /* Styles for items within Seller Modal */
+      .modal-seller-item {
+        background-color: var(--bg);
+        border-radius: var(--radius-sm);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .modal-seller-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .modal-seller-item-info-line {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: baseline;
+        font-weight: 600;
+        font-size: var(--text-lg);
+        color: var(--text);
+        margin-bottom: 0.25rem;
+      }
+
+      .modal-seller-item-info-line .main-item-details {
+        flex-grow: 1;
+        min-width: 0;
+        padding-right: 0.5rem;
+      }
+
+      /* Style for 8Q text only */
+      .modal-seller-item-info-line .bulk-8q {
+        color: var(--secondary);
+      }
+
+      .modal-seller-item-info-line .item-raw-total {
+        flex-shrink: 0;
+        text-align: right;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .modal-seller-item-buyer-info {
+        font-size: var(--text-sm);
+        color: var(--border);
+        text-align: right;
+        margin-top: 0.25rem;
+      }
+
+      /* Styles for items within Buyer Modal */
+      .modal-buyer-item {
+        background-color: var(--bg);
+        border-radius: var(--radius-sm);
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      .modal-buyer-item:last-child {
+        margin-bottom: 0;
+      }
+      .modal-buyer-item-header {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        font-weight: 600;
+        font-size: var(--text-lg);
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+      }
+      .modal-buyer-item-header span:first-child {
+        flex-basis: 70%;
+      }
+      .modal-buyer-item-header span:last-child {
+        flex-basis: 30%;
+        text-align: right;
+        color: var(--text);
+      }
+
+      /* Style for 8Q text only in buyer modal */
+      .modal-buyer-item-header .bulk-8q {
+        color: var(--secondary);
+      }
+
+      .modal-buyer-item-seller {
+        font-size: var(--text-sm);
+        color: var(--border);
+        text-align: right;
+        margin-top: 0.25rem;
+      }
+
+      .modal-totals {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--light-border);
+      }
+
+      .modal-total-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.75rem 0;
+        font-size: var(--text-lg);
+        font-weight: 500;
+      }
+
+      .modal-total-row span:last-child {
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .modal-final-total span:last-child {
+        color: var(--primary);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .modal-actions button {
+        margin: 0;
+        flex: 1;
+        padding: 0.8rem 1rem;
+        font-size: var(--text-base);
+        border-radius: var(--radius-md);
+        background-color: var(--lighter-bg);
+        color: var(--text);
+        border: 1px solid var(--light-border);
+        box-shadow: none;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.2s;
+      }
+
+      .modal-actions button:hover {
+        background-color: var(--bg);
+      }
+
+      .modal-actions button.warning {
+        color: var(--secondary);
+        border-color: var(--secondary);
+      }
+
+      .modal-actions button.danger {
+        color: var(--danger);
+        border-color: var(--danger);
+      }
+
+      .modal-actions button.secondary {
+        color: purple;
+        border-color: purple;
+      }
+
+      /* Overall summary */
+      .overall-sellers-summary {
+        background-color: var(--card-bg);
+        border-radius: var(--radius-md);
+        padding: 1.25rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow-md);
+      }
+
+      .overall-summary-row {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        font-size: var(--text-lg);
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .overall-summary-row span {
+        flex: 1;
+        text-align: center;
+        white-space: nowrap;
+        padding: 0.25rem 0;
+      }
+
+      .overall-summary-row .label {
+        font-size: var(--text-sm);
+        color: var(--border);
+        font-weight: normal;
+        margin-bottom: 0.25rem;
+      }
+
+      .overall-summary-row .value {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      /* No results message */
+      .no-results {
+        text-align: center;
+        padding: 1rem;
+        color: var(--text);
+        font-style: italic;
+        background-color: var(--card-bg);
+        border-radius: var(--radius-md);
+        margin-top: 0.5rem;
+      }
+
+      /* Simplified Alert/Confirm Modals */
+      .modal.alert-modal .modal-content,
+      .modal.confirm-modal .modal-content {
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .modal.alert-modal .modal-header,
+      .modal.confirm-modal .modal-header {
+        border-bottom: none;
+        margin-bottom: 0.5rem;
+      }
+
+      .modal.alert-modal .modal-title,
+      .modal.confirm-modal .modal-title {
+        font-size: var(--text-xl);
+        color: var(--secondary);
+        margin: 0 auto;
+      }
+
+      .modal.alert-modal .modal-close,
+      .modal.confirm-modal .modal-close {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: var(--text-xl);
+      }
+
+      .modal.alert-modal .modal-body,
+      .modal.confirm-modal .modal-body {
+        margin-bottom: 1rem;
+        font-size: var(--text-base);
+        color: var(--text);
+      }
+
+      .modal.alert-modal .modal-actions,
+      .modal.confirm-modal .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .modal.alert-modal .modal-actions button,
+      .modal.confirm-modal .modal-actions button {
+        flex: none;
+        width: auto;
+        min-width: 80px;
+        padding: 0.6rem 1.2rem;
+        font-size: var(--text-sm);
+        border: 1px solid var(--border);
+        background-color: var(--bg);
+        color: var(--text);
+      }
+
+      .modal.alert-modal .modal-actions button#alert-ok,
+      .modal.confirm-modal .modal-actions button#confirm-ok {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .modal.confirm-modal .modal-actions button#confirm-cancel {
+        background: var(--lighter-bg);
+        color: var(--text);
+        border-color: var(--light-border);
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 480px) {
+        input.quantity-input {
+          max-width: 60px;
+        }
+
+        .bulk-options {
+          flex-shrink: 0;
+        }
+
+        .modal-content {
+          padding: 1rem;
+        }
+
+        .modal-actions button {
+          font-size: var(--text-sm);
+          padding: 0.8rem;
+        }
+
+        .overall-summary-row .value {
+          font-size: var(--text-lg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="menu">
+      <button id="calc-btn" class="active">Calculator</button>
+      <button id="sellers-btn">Sellers</button>
+      <button id="buyers-btn">Buyers</button>
+    </div>
+
+    <div id="calculator-view">
+      <div class="card">
+        <input
+          type="text"
+          id="seller-name"
+          placeholder="Seller name"
+          class="seller-input"
+        />
+      </div>
+
+      <div id="items-container"></div>
+
+      <button id="add-btn" class="secondary">+ Add Item</button>
+
+      <div class="summary">
+        <div class="total" id="total-amount">Raw Total: 0.00</div>
+        <div class="total" id="commission-amount">Commission (10%): 0.00</div>
+        <div class="total" id="final-total">Net Total: 0.00</div>
+      </div>
+
+      <button id="save-btn">Save Seller</button>
+    </div>
+
+    <div id="list-view">
+      <div class="search-container">
+        <input
+          type="search"
+          id="seller-search"
+          placeholder="Search sellers..."
+          class="search-input"
+        />
+      </div>
+
+      <div id="list-content" class="list-container"></div>
+    </div>
+
+    <div id="buyers-view">
+      <div class="search-container">
+        <input
+          type="search"
+          id="buyer-search"
+          placeholder="Search buyers..."
+          class="search-input"
+        />
+      </div>
+
+      <div id="buyers-list-content" class="list-container"></div>
+    </div>
+
+    <div
+      id="overall-sellers-summary"
+      class="overall-sellers-summary"
+      style="display: none"
+    >
+      <div class="overall-summary-row">
+        <div>
+          <div class="label">Raw Total</div>
+          <span id="overall-raw-total-value" class="value">0.00</span>
+        </div>
+        <div>
+          <div class="label">Commission</div>
+          <span id="overall-commission-total-value" class="value">0.00</span>
+        </div>
+        <div>
+          <div class="label">Net Total</div>
+          <span id="overall-final-net-total-value" class="value">0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <button id="delete-all-sellers-btn" class="danger">
+      Delete All Sellers
+    </button>
+
+    <div id="seller-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-seller-name"></h2>
+          <button class="modal-close" id="modal-close">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-items-container"></div>
+        <div class="modal-totals">
+          <div class="modal-total-row">
+            <span>Total Raw:</span>
+            <span id="modal-total-raw">0.00</span>
+          </div>
+          <div class="modal-total-row">
+            <span id="modal-total-commission-label">Total Commission:</span>
+            <span id="modal-total-commission">0.00</span>
+          </div>
+          <div class="modal-total-row modal-final-total">
+            <span>Total Net:</span>
+            <span id="modal-total-net">0.00</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="modal-paid-btn" class="warning">Mark Paid</button>
+          <button id="modal-edit-btn" class="secondary">Edit</button>
+          <button id="modal-delete-btn" class="danger">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="buyer-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-buyer-name"></h2>
+          <button class="modal-close" id="modal-buyer-close">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-buyer-items-container"></div>
+        <div class="modal-totals">
+          <div class="modal-total-row">
+            <span>Total Raw:</span>
+            <span id="modal-buyer-total-raw">0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Data structures
+      let items = []
+      let sellerName = ""
+      const commissionPercent = 10
+      let currentGlobalBulkOption = "9"
+      let currentModalSellerIndex = -1
+      let originalSellerSavedAt = null
+      let originalSellerNameForEdit = null
+
+      // DOM Elements
+      const itemsContainer = document.getElementById("items-container")
+      const sellerNameInput = document.getElementById("seller-name")
+      const totalAmountEl = document.getElementById("total-amount")
+      const commissionAmountEl = document.getElementById("commission-amount")
+      const finalTotalEl = document.getElementById("final-total")
+      const addBtn = document.getElementById("add-btn")
+      const saveBtn = document.getElementById("save-btn")
+
+      // Menu buttons and views
+      const calcBtn = document.getElementById("calc-btn")
+      const sellersBtn = document.getElementById("sellers-btn")
+      const buyersBtn = document.getElementById("buyers-btn")
+      const calculatorView = document.getElementById("calculator-view")
+      const listView = document.getElementById("list-view")
+      const buyersView = document.getElementById("buyers-view")
+      const listContent = document.getElementById("list-content")
+      const buyersListContent = document.getElementById("buyers-list-content")
+      const deleteAllSellersBtn = document.getElementById(
+        "delete-all-sellers-btn"
+      )
+      const sellerSearchInput = document.getElementById("seller-search")
+      const buyerSearchInput = document.getElementById("buyer-search")
+
+      // Overall sellers summary elements
+      const overallSellersSummaryEl = document.getElementById(
+        "overall-sellers-summary"
+      )
+      const overallRawTotalValueEl = document.getElementById(
+        "overall-raw-total-value"
+      )
+      const overallCommissionTotalValueEl = document.getElementById(
+        "overall-commission-total-value"
+      )
+      const overallFinalNetTotalValueEl = document.getElementById(
+        "overall-final-net-total-value"
+      )
+
+      // Seller Modal elements
+      const sellerModal = document.getElementById("seller-modal")
+      const modalSellerName = document.getElementById("modal-seller-name")
+      const modalItemsContainer = document.getElementById(
+        "modal-items-container"
+      )
+      const modalTotalRaw = document.getElementById("modal-total-raw")
+      const modalTotalCommission = document.getElementById(
+        "modal-total-commission"
+      )
+      const modalTotalCommissionLabel = document.getElementById(
+        "modal-total-commission-label"
+      )
+      const modalTotalNet = document.getElementById("modal-total-net")
+      const modalPaidBtn = document.getElementById("modal-paid-btn")
+      const modalEditBtn = document.getElementById("modal-edit-btn")
+      const modalDeleteBtn = document.getElementById("modal-delete-btn")
+      const modalCloseBtn = document.getElementById("modal-close")
+
+      // Buyer Modal elements
+      const buyerModal = document.getElementById("buyer-modal")
+      const modalBuyerName = document.getElementById("modal-buyer-name")
+      const modalBuyerItemsContainer = document.getElementById(
+        "modal-buyer-items-container"
+      )
+      const modalBuyerTotalRaw = document.getElementById(
+        "modal-buyer-total-raw"
+      )
+      const modalBuyerCloseBtn = document.getElementById("modal-buyer-close")
+
+      // Functions
+      /**
+       * Creates a new item object with default values.
+       * @returns {object} The new item object.
+       */
+      function createItem() {
+        return {
+          quantity: null,
+          price: null,
+          buyerName: "",
+          rawAmount: 0,
+          commission: 0,
+          netAmount: 0,
+          bulkOption: currentGlobalBulkOption,
+        }
+      }
+
+      /**
+       * Formats a number to a string with two decimal places and comma separators.
+       * @param {number} num - The number to format.
+       * @returns {string} The formatted number string.
+       */
+      function formatNumber(num) {
+        if (num === null || isNaN(num)) return "0.00"
+        return parseFloat(num)
+          .toFixed(2)
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      }
+
+      /**
+       * Formats a price number, showing no decimals if it's an integer.
+       * @param {number} num - The number to format.
+       * @returns {string} The formatted price string.
+       */
+      function formatPrice(num) {
+        if (num === null || isNaN(num)) return "" // Return empty string for null/NaN price
+        const parsedNum = parseFloat(num)
+        if (parsedNum % 1 === 0) {
+          // Check if it's an integer
+          return parsedNum.toString()
+        }
+        return parsedNum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      }
+
+      /**
+       * Calculates the raw amount, commission, and net amount for a given item.
+       * This function uses the GLOBAL `commissionPercent` for calculator view.
+       * @param {object} item - The item object to calculate amounts for.
+       */
+      function calculateItemAmounts(item) {
+        const bulkValue = item.bulkOption === "8" ? 72 : 64
+        item.rawAmount = ((item.price || 0) * (item.quantity || 0)) / bulkValue
+        // Use the global commissionPercent for calculator calculations
+        item.commission = item.rawAmount * (commissionPercent / 100)
+        item.netAmount = item.rawAmount - item.commission
+      }
+
+      /**
+       * Updates the summary section with total raw, commission, and net amounts.
+       */
+      function updateSummary() {
+        const totalRaw = items.reduce(
+          (sum, item) => sum + (item.rawAmount || 0),
+          0
+        )
+        const totalCommission = items.reduce(
+          (sum, item) => sum + (item.commission || 0),
+          0
+        )
+        const totalNet = items.reduce(
+          (sum, item) => sum + (item.netAmount || 0),
+          0
+        )
+
+        totalAmountEl.innerHTML = `Raw Total: <b>${formatNumber(totalRaw)}</b>`
+        // Updated to show commission percentage as "Commission (X%):"
+        commissionAmountEl.innerHTML = `Commission (${commissionPercent}%): <b>${formatNumber(
+          totalCommission
+        )}</b>`
+        finalTotalEl.innerHTML = `Net Total: <b>${formatNumber(totalNet)}</b>`
+      }
+
+      /**
+       * Updates the display of an individual item card with its calculated values.
+       * @param {HTMLElement} itemCard - The HTML element representing the item card.
+       * @param {object} item - The item object whose values are to be displayed.
+       */
+      function updateItemDisplay(itemCard, item) {
+        const rawTotalDiv = itemCard.querySelector(".raw-total-value")
+        const commissionDiv = itemCard.querySelector(".commission-value")
+        const netAmountDiv = itemCard.querySelector(".net-amount-value")
+
+        if (rawTotalDiv) rawTotalDiv.textContent = formatNumber(item.rawAmount)
+        if (commissionDiv)
+          commissionDiv.textContent = formatNumber(item.commission)
+        if (netAmountDiv)
+          netAmountDiv.textContent = formatNumber(item.netAmount)
+      }
+
+      /**
+       * Renders all items in the `items` array to the UI.
+       * @param {boolean} [focusLast=false] - Whether to focus on the last item's buyer name input after rendering.
+       */
+      function renderItems(focusLast = false) {
+        itemsContainer.innerHTML = ""
+
+        items.forEach((item, index) => {
+          const card = document.createElement("div")
+          card.className = "card"
+
+          const buyerInputRow = document.createElement("div")
+          buyerInputRow.className = "input-row"
+
+          const buyerNameInput = document.createElement("input")
+          buyerNameInput.type = "text"
+          buyerNameInput.className = "buyer-name-input"
+          buyerNameInput.placeholder = "Buyer name (optional)"
+          buyerNameInput.value = item.buyerName ?? ""
+          buyerNameInput.addEventListener("input", (e) => {
+            item.buyerName = e.target.value.trim()
+          })
+          buyerInputRow.appendChild(buyerNameInput)
+
+          const inputRow = document.createElement("div")
+          inputRow.className = "input-row"
+
+          const quantityInput = document.createElement("input")
+          quantityInput.type = "number"
+          quantityInput.className = "quantity-input"
+          quantityInput.placeholder = "Qty"
+          quantityInput.value = item.quantity ?? ""
+          quantityInput.addEventListener("input", (e) => {
+            item.quantity = parseInt(e.target.value) || null
+            calculateItemAmounts(item)
+            updateSummary()
+            updateItemDisplay(card, item)
+          })
+
+          const priceInput = document.createElement("input")
+          priceInput.type = "number"
+          priceInput.className = "price-input"
+          priceInput.placeholder = "Price"
+          priceInput.value = item.price ?? ""
+          priceInput.addEventListener("input", (e) => {
+            item.price = parseFloat(e.target.value) || null
+            calculateItemAmounts(item)
+            updateSummary()
+            updateItemDisplay(card, item)
+          })
+
+          priceInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === "Next") {
+              if (index === items.length - 1) {
+                addBtn.click()
+              }
+            }
+          })
+
+          const bulkOptions = document.createElement("div")
+          bulkOptions.className = "bulk-options"
+
+          const bulk9Btn = document.createElement("button")
+          bulk9Btn.className = `bulk-btn ${
+            item.bulkOption === "9" ? "active" : ""
+          }`
+          bulk9Btn.textContent = "9 quad"
+          bulk9Btn.title = "Divide by 64"
+          bulk9Btn.addEventListener("click", () => {
+            item.bulkOption = "9"
+            calculateItemAmounts(item)
+            updateSummary()
+            updateItemDisplay(card, item)
+            bulk9Btn.classList.add("active")
+            bulk8Btn.classList.remove("active")
+            bulk8Btn.classList.remove("bulk-8-btn")
+          })
+
+          const bulk8Btn = document.createElement("button")
+          bulk8Btn.className = `bulk-btn ${
+            item.bulkOption === "8" ? "active bulk-8-btn" : ""
+          }`
+          bulk8Btn.textContent = "8 quad"
+          bulk8Btn.title = "Divide by 72"
+          bulk8Btn.addEventListener("click", () => {
+            item.bulkOption = "8"
+            calculateItemAmounts(item)
+            updateSummary()
+            updateItemDisplay(card, item)
+            bulk8Btn.classList.add("active", "bulk-8-btn")
+            bulk9Btn.classList.remove("active")
+          })
+
+          bulkOptions.appendChild(bulk9Btn)
+          bulkOptions.appendChild(bulk8Btn)
+
+          inputRow.appendChild(quantityInput)
+          inputRow.appendChild(priceInput)
+          inputRow.appendChild(bulkOptions)
+
+          const results = document.createElement("div")
+          results.className = "calculator-item-results"
+
+          results.innerHTML = `
+              <div>
+                <div class="label">Raw Total</div>
+                <div class="value raw-total-value">${formatNumber(
+                  item.rawAmount
+                )}</div>
+              </div>
+              <div>
+                <div class="label">Commission</div>
+                <div class="value commission-value">${formatNumber(
+                  item.commission
+                )}</div>
+              </div>
+              <div>
+                <div class="label">Net Amount</div>
+                <div class="value net-amount-value">${formatNumber(
+                  item.netAmount
+                )}</div>
+              </div>
+            `
+          card.appendChild(buyerInputRow)
+          card.appendChild(inputRow)
+          card.appendChild(results)
+          itemsContainer.appendChild(card)
+
+          if (focusLast && index === items.length - 1) {
+            setTimeout(() => buyerNameInput.focus(), 0)
+          }
+        })
+
+        updateSummary()
+      }
+
+      // Event listener for adding a new item
+      addBtn.addEventListener("click", () => {
+        items.push(createItem())
+        renderItems(true)
+      })
+
+      // Event listener for seller name input
+      sellerNameInput.addEventListener("input", () => {
+        sellerName = sellerNameInput.value.trim()
+      })
+
+      // Event listener for saving seller data
+      saveBtn.addEventListener("click", () => {
+        sellerName = sellerNameInput.value.trim()
+        if (!sellerName) {
+          showCustomAlert("Please enter **Seller Name** before saving.")
+          return
+        }
+        if (items.length === 0) {
+          showCustomAlert("Add at least **one item** before saving.")
+          return
+        }
+
+        // Validate individual item fields
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i]
+          if (item.quantity === null || item.quantity <= 0) {
+            showCustomAlert(
+              `Please enter a valid **Quantity** for item ${
+                i + 1
+              } before saving.`
+            )
+            return
+          }
+          if (item.price === null || item.price <= 0) {
+            showCustomAlert(
+              `Please enter a valid **Price** for item ${i + 1} before saving.`
+            )
+            return
+          }
+        }
+
+        let sellersData = JSON.parse(
+          localStorage.getItem("sellersData") || "[]"
+        )
+
+        // If editing an existing seller, remove the original seller's entry from sellersData
+        if (originalSellerSavedAt && originalSellerNameForEdit) {
+          sellersData = sellersData.filter(
+            (seller) =>
+              !(
+                seller.sellerName === originalSellerNameForEdit &&
+                seller.savedAt === originalSellerSavedAt
+              )
+          )
+        }
+
+        const currentSellerTotalRaw = items.reduce(
+          (sum, item) => sum + item.rawAmount,
+          0
+        )
+        const currentSellerTotalCommission = items.reduce(
+          (sum, item) => sum + item.commission,
+          0
+        )
+        const currentSellerTotalNet = items.reduce(
+          (sum, item) => sum + item.netAmount,
+          0
+        )
+
+        sellersData.push({
+          sellerName,
+          commissionPercent: commissionPercent, // Save the current global commissionPercent
+          items: items.map((i) => ({
+            quantity: i.quantity,
+            price: i.price,
+            buyerName: i.buyerName,
+            rawAmount: i.rawAmount,
+            commission: i.commission,
+            netAmount: i.netAmount,
+            bulkOption: i.bulkOption,
+          })),
+          totalRaw: currentSellerTotalRaw,
+          totalCommission: currentSellerTotalCommission,
+          totalNet: currentSellerTotalNet,
+          savedAt: new Date().toISOString(),
+          isPaid: false,
+        })
+
+        localStorage.setItem("sellersData", JSON.stringify(sellersData))
+
+        // Reset calculator view after saving
+        sellerNameInput.value = ""
+        items = [createItem()]
+        sellerName = ""
+        currentGlobalBulkOption = "9"
+        originalSellerSavedAt = null // Reset for next operation
+        originalSellerNameForEdit = null // Reset original seller name
+        renderItems()
+        updateSummary()
+      })
+
+      /**
+       * Displays a custom alert modal with a given message.
+       * @param {string} message - The message to display in the alert.
+       */
+      function showCustomAlert(message) {
+        const alertModal = document.createElement("div")
+        alertModal.className = "modal alert-modal"
+        alertModal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Alert</h2>
+                        <button class="modal-close" id="alert-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>${message}</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="alert-ok">OK</button>
+                    </div>
+                </div>
+            `
+        document.body.appendChild(alertModal)
+        alertModal.style.display = "block"
+
+        const removeAlert = () => {
+          alertModal.remove()
+        }
+
+        document
+          .getElementById("alert-close")
+          .addEventListener("click", removeAlert)
+        document
+          .getElementById("alert-ok")
+          .addEventListener("click", removeAlert)
+        alertModal.addEventListener("click", (e) => {
+          if (e.target === alertModal) {
+            removeAlert()
+          }
+        })
+      }
+
+      /**
+       * Displays a custom confirmation modal with a given message and a callback for confirmation.
+       * @param {string} message - The message to display in the confirmation.
+       * @param {function} onConfirm - The function to execute if the user confirms.
+       */
+      function showCustomConfirm(message, onConfirm) {
+        const confirmModal = document.createElement("div")
+        confirmModal.className = "modal confirm-modal"
+        confirmModal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Confirm Action</h2>
+                        <button class="modal-close" id="confirm-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>${message}</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="confirm-cancel">Cancel</button>
+                        <button id="confirm-ok">Confirm</button>
+                    </div>
+                </div>
+            `
+        document.body.appendChild(confirmModal)
+        confirmModal.style.display = "block"
+
+        const removeConfirm = () => {
+          confirmModal.remove()
+        }
+
+        document
+          .getElementById("confirm-close")
+          .addEventListener("click", removeConfirm)
+        document
+          .getElementById("confirm-cancel")
+          .addEventListener("click", removeConfirm)
+        document.getElementById("confirm-ok").addEventListener("click", () => {
+          onConfirm()
+          removeConfirm()
+        })
+        confirmModal.addEventListener("click", (e) => {
+          if (e.target === confirmModal) {
+            removeConfirm()
+          }
+        })
+      }
+
+      /**
+       * Switches the view to the calculator interface.
+       */
+      function showCalculatorView() {
+        calcBtn.classList.add("active")
+        sellersBtn.classList.remove("active")
+        buyersBtn.classList.remove("active")
+        calculatorView.style.display = "block"
+        listView.style.display = "none"
+        buyersView.style.display = "none"
+        overallSellersSummaryEl.style.display = "none"
+        deleteAllSellersBtn.style.display = "none"
+      }
+
+      /**
+       * Loads a seller's data into the calculator for editing.
+       * @param {number} sellerIndex - The index of the seller in `sellersData`.
+       */
+      function loadSellerForEdit(sellerIndex) {
+        let sellersData = JSON.parse(
+          localStorage.getItem("sellersData") || "[]"
+        )
+        const sellerToEdit = sellersData[sellerIndex]
+
+        if (sellerToEdit) {
+          sellerNameInput.value = sellerToEdit.sellerName
+          items = sellerToEdit.items.map((item) => ({ ...item }))
+          originalSellerSavedAt = sellerToEdit.savedAt
+          originalSellerNameForEdit = sellerToEdit.sellerName
+
+          // Recalculate items using the original commissionPercent from saved data
+          items.forEach((item) => {
+            const bulkValue = item.bulkOption === "8" ? 72 : 64
+            item.rawAmount =
+              ((item.price || 0) * (item.quantity || 0)) / bulkValue
+            item.commission =
+              item.rawAmount * ((sellerToEdit.commissionPercent || 10) / 100)
+            item.netAmount = item.rawAmount - item.commission
+          })
+
+          renderItems()
+          showCalculatorView()
+          closeModal("seller")
+        }
+      }
+
+      /**
+       * Deletes a seller's data from local storage.
+       * @param {number} index - The index of the seller to delete.
+       */
+      function deleteSeller(index) {
+        showCustomConfirm(
+          "Are you sure you want to delete this seller's data? This action cannot be undone.",
+          () => {
+            const sellersData = JSON.parse(
+              localStorage.getItem("sellersData") || "[]"
+            )
+            sellersData.splice(index, 1)
+            localStorage.setItem("sellersData", JSON.stringify(sellersData))
+
+            showSellersList()
+            closeModal("seller")
+          }
+        )
+      }
+
+      /**
+       * Deletes all sellers data from local storage.
+       */
+      function deleteAllSellers() {
+        showCustomConfirm(
+          "Are you sure you want to delete ALL sellers data? This action cannot be undone.",
+          () => {
+            localStorage.removeItem("sellersData")
+            showSellersList()
+            showCustomAlert("All sellers data has been deleted.")
+          }
+        )
+      }
+
+      /**
+       * Toggles the paid status of a seller.
+       * @param {number} index - The index of the seller to toggle.
+       */
+      function toggleSellerPaidStatus(index) {
+        let sellersData = JSON.parse(
+          localStorage.getItem("sellersData") || "[]"
+        )
+        if (sellersData[index]) {
+          sellersData[index].isPaid = !sellersData[index].isPaid
+          localStorage.setItem("sellersData", JSON.stringify(sellersData))
+          showSellersList()
+          if (currentModalSellerIndex === index) {
+            showSellerModal(index)
+          }
+        }
+      }
+
+      /**
+       * Updates the overall summary display for all sellers.
+       */
+      function updateOverallSellersSummary() {
+        const sellersData = JSON.parse(
+          localStorage.getItem("sellersData") || "[]"
+        )
+        let overallRaw = 0
+        let overallCommission = 0
+        let overallNet = 0
+
+        sellersData.forEach((seller) => {
+          overallRaw += seller.totalRaw || 0
+          overallCommission += seller.totalCommission || 0
+          overallNet += seller.totalNet || 0
+        })
+
+        overallRawTotalValueEl.textContent = formatNumber(overallRaw)
+        overallCommissionTotalValueEl.textContent =
+          formatNumber(overallCommission)
+        overallFinalNetTotalValueEl.textContent = formatNumber(overallNet)
+
+        if (sellersData.length > 0 && sellersBtn.classList.contains("active")) {
+          overallSellersSummaryEl.style.display = "block"
+        } else {
+          overallSellersSummaryEl.style.display = "none"
+        }
+      }
+
+      /**
+       * Filters sellers based on a search term.
+       * @param {string} searchTerm - The term to search for.
+       * @returns {Array} An array of filtered seller objects.
+       */
+      function filterSellers(searchTerm) {
+        const sellersData = JSON.parse(
+          localStorage.getItem("sellersData") || "[]"
+        )
+
+        if (!searchTerm) {
+          return sellersData
+        }
+
+        const searchWords = searchTerm.toLowerCase().split(/\s+/)
+
+        return sellersData.filter((seller) => {
+          const sellerName = seller.sellerName.toLowerCase()
+          return searchWords.every((word) => sellerName.includes(word))
+        })
+      }
+
+      /**
+       * Displays the list of sellers.
+       */
+      function showSellersList() {
+        const searchTerm = sellerSearchInput.value.trim()
+        const sellersData = JSON.parse(
+          localStorage.getItem("sellersData") || "[]"
+        )
+        const filteredSellers = filterSellers(searchTerm)
+
+        listContent.innerHTML = ""
+
+        if (filteredSellers.length === 0) {
+          listContent.innerHTML = `
+              <div class="no-results">
+                ${
+                  searchTerm
+                    ? "No matching sellers found"
+                    : "No sellers data saved yet"
+                }
+              </div>
+            `
+          deleteAllSellersBtn.style.display = "none"
+          overallSellersSummaryEl.style.display = "none"
+          return
+        }
+
+        filteredSellers.forEach((filteredSeller, filteredIndex) => {
+          // Find the original index to use for modal operations (delete, edit, toggle paid)
+          const originalIndex = sellersData.findIndex(
+            (seller) =>
+              seller.sellerName === filteredSeller.sellerName &&
+              seller.savedAt === filteredSeller.savedAt
+          )
+
+          const sellerDiv = document.createElement("div")
+          sellerDiv.className = "list-item"
+          sellerDiv.innerHTML = `
+              <div class="list-item-header">
+                <span class="seller-name ${
+                  filteredSeller.isPaid ? "paid" : ""
+                }">${filteredSeller.sellerName}</span>
+                <span>${formatNumber(filteredSeller.totalNet)}</span>
+              </div>
+              `
+
+          let tapTimer
+          sellerDiv.addEventListener("touchstart", () => {
+            sellerDiv.classList.add("active-tap")
+            tapTimer = setTimeout(() => {
+              sellerDiv.classList.remove("active-tap")
+            }, 200)
+          })
+
+          sellerDiv.addEventListener("touchend", () => {
+            clearTimeout(tapTimer)
+            sellerDiv.classList.remove("active-tap")
+          })
+
+          sellerDiv.addEventListener("click", (e) => {
+            e.preventDefault()
+            showSellerModal(originalIndex)
+          })
+
+          listContent.appendChild(sellerDiv)
+        })
+
+        if (sellersData.length > 0) {
+          deleteAllSellersBtn.style.display = "block"
+        } else {
+          deleteAllSellersBtn.style.display = "none"
+        }
+
+        updateOverallSellersSummary()
+      }
+
+      /**
+       * Displays the seller details modal.
+       * @param {number} index - The index of the seller in `sellersData` to display.
+       */
+      function showSellerModal(index) {
+        const sellersData = JSON.parse(
+          localStorage.getItem("sellersData") || "[]"
+        )
+        const seller = sellersData[index]
+
+        if (!seller) return
+
+        currentModalSellerIndex = index
+        modalSellerName.textContent = seller.sellerName
+
+        if (seller.isPaid) {
+          modalSellerName.classList.add("paid")
+          modalPaidBtn.textContent = "Unmark Paid"
+        } else {
+          modalSellerName.classList.remove("paid")
+          modalPaidBtn.textContent = "Mark Paid"
+        }
+
+        modalEditBtn.textContent = "Edit"
+        modalDeleteBtn.textContent = "Delete"
+
+        modalItemsContainer.innerHTML = ""
+        seller.items.forEach((item, itemIndex) => {
+          const bulkTextContent = item.bulkOption === "8" ? "8Q" : "9Q"
+          const bulkDisplay =
+            item.bulkOption === "8"
+              ? `<span class="bulk-8q">${bulkTextContent}</span>`
+              : bulkTextContent
+
+          const itemElement = document.createElement("div")
+          itemElement.className = "modal-seller-item"
+          itemElement.innerHTML = `
+              <div class="modal-seller-item-info-line">
+                <span class="main-item-details">${itemIndex + 1}) ${
+            item.quantity
+          } x ${formatPrice(item.price)} / ${bulkDisplay}</span>
+                <span class="item-raw-total">${formatNumber(
+                  item.rawAmount
+                )}</span>
+              </div>
+              ${
+                item.buyerName
+                  ? `<div class="modal-seller-item-buyer-info">${item.buyerName}</div>`
+                  : ""
+              }
+            `
+          modalItemsContainer.appendChild(itemElement)
+        })
+
+        // Use the commission percentage from the seller's stored data
+        const modalCalculatedTotalCommission = seller.items.reduce(
+          (sum, item) => {
+            const bulkValue = item.bulkOption === "8" ? 72 : 64
+            const raw = ((item.price || 0) * (item.quantity || 0)) / bulkValue
+            return sum + raw * ((seller.commissionPercent || 10) / 100)
+          },
+          0
+        )
+        const modalCalculatedTotalNet =
+          seller.totalRaw - modalCalculatedTotalCommission
+
+        modalTotalRaw.textContent = formatNumber(seller.totalRaw)
+        // Update modal total commission label to show the percentage
+        modalTotalCommissionLabel.textContent = `Total Commission (${
+          seller.commissionPercent || 10
+        }%):`
+        modalTotalCommission.textContent = formatNumber(
+          modalCalculatedTotalCommission
+        )
+        modalTotalNet.textContent = formatNumber(modalCalculatedTotalNet)
+
+        sellerModal.style.display = "block"
+      }
+
+      /**
+       * Closes a specific modal.
+       * @param {string} type - The type of modal to close ("seller" or "buyer").
+       */
+      function closeModal(type) {
+        if (type === "seller") {
+          sellerModal.style.display = "none"
+          currentModalSellerIndex = -1
+        }
+        if (type === "buyer") {
+          buyerModal.style.display = "none"
+        }
+      }
+
+      /**
+       * Filters all buyer-related items based on a search term.
+       * @param {string} searchTerm - The term to search for.
+       * @returns {Array} An array of filtered item objects, each including the sellerName.
+       */
+      function filterBuyers(searchTerm) {
+        const sellersData = JSON.parse(
+          localStorage.getItem("sellersData") || "[]"
+        )
+        let allBuyerItems = []
+
+        // Collect all buyer items from all sellers
+        sellersData.forEach((seller) => {
+          seller.items.forEach((item) => {
+            // Add sellerName to each item for display in buyer modal
+            allBuyerItems.push({
+              ...item,
+              sellerName: seller.sellerName,
+              sellerCommissionPercent: seller.commissionPercent || 10,
+            })
+          })
+        })
+
+        if (!searchTerm) {
+          return allBuyerItems
+        }
+
+        const searchWords = searchTerm.toLowerCase().split(/\s+/)
+
+        return allBuyerItems.filter((item) => {
+          const buyerName = (item.buyerName || "").toLowerCase()
+          const sellerName = (item.sellerName || "").toLowerCase()
+          return searchWords.every(
+            (word) => buyerName.includes(word) || sellerName.includes(word)
+          )
+        })
+      }
+
+      /**
+       * Displays the list of buyers, grouped by buyer name.
+       */
+      function showBuyersList() {
+        const searchTerm = buyerSearchInput.value.trim()
+        const filteredBuyerItems = filterBuyers(searchTerm)
+
+        // Group buyers by buyerName
+        const groupedBuyers = {}
+        filteredBuyerItems.forEach((item) => {
+          const buyerNameKey = item.buyerName || "Unknown Buyer"
+          if (!groupedBuyers[buyerNameKey]) {
+            groupedBuyers[buyerNameKey] = {
+              buyerName: buyerNameKey,
+              items: [],
+              totalRaw: 0,
+              totalCommission: 0,
+              totalNet: 0,
+            }
+          }
+          groupedBuyers[buyerNameKey].items.push(item)
+          groupedBuyers[buyerNameKey].totalRaw += item.rawAmount
+          groupedBuyers[buyerNameKey].totalCommission += item.commission
+          groupedBuyers[buyerNameKey].totalNet += item.netAmount
+        })
+
+        const buyersArray = Object.values(groupedBuyers)
+
+        buyersListContent.innerHTML = ""
+
+        if (buyersArray.length === 0) {
+          buyersListContent.innerHTML = `
+              <div class="no-results">
+                ${
+                  searchTerm
+                    ? "No matching buyers found"
+                    : "No buyers data saved yet"
+                }
+              </div>
+            `
+          return
+        }
+
+        buyersArray.forEach((buyerGroup, groupIndex) => {
+          const buyerDiv = document.createElement("div")
+          buyerDiv.className = "list-item"
+          // Simplified list item to only show buyer name and total raw
+          buyerDiv.innerHTML = `
+              <div class="list-item-header">
+                <span class="buyer-name">${buyerGroup.buyerName}</span>
+                <span>${formatNumber(buyerGroup.totalRaw)}</span>
+              </div>
+            `
+
+          let tapTimer
+          buyerDiv.addEventListener("touchstart", () => {
+            buyerDiv.classList.add("active-tap")
+            tapTimer = setTimeout(() => {
+              buyerDiv.classList.remove("active-tap")
+            }, 200)
+          })
+
+          buyerDiv.addEventListener("touchend", () => {
+            clearTimeout(tapTimer)
+            buyerDiv.classList.remove("active-tap")
+          })
+
+          buyerDiv.addEventListener("click", (e) => {
+            e.preventDefault()
+            showBuyerModal(buyerGroup.buyerName)
+          })
+
+          buyersListContent.appendChild(buyerDiv)
+        })
+      }
+
+      /**
+       * Displays the buyer details modal for a specific buyer.
+       * @param {string} buyerName - The name of the buyer to display details for.
+       */
+      function showBuyerModal(buyerName) {
+        const allBuyersData = filterBuyers("") // Get all buyer items from sellers data
+        const itemsForThisBuyer = allBuyersData.filter(
+          (item) => (item.buyerName || "Unknown Buyer") === buyerName
+        )
+
+        if (itemsForThisBuyer.length === 0) return
+
+        modalBuyerName.textContent = buyerName
+        modalBuyerItemsContainer.innerHTML = ""
+
+        let totalRaw = 0
+
+        itemsForThisBuyer.forEach((item, itemIndex) => {
+          const bulkTextContent = item.bulkOption === "8" ? "8Q" : "9Q"
+          const bulkDisplay =
+            item.bulkOption === "8"
+              ? `<span class="bulk-8q">${bulkTextContent}</span>`
+              : bulkTextContent
+
+          const itemElement = document.createElement("div")
+          itemElement.className = "modal-buyer-item"
+          itemElement.innerHTML = `
+                  <div class="modal-buyer-item-header">
+                      <span>${itemIndex + 1}) ${item.quantity} x ${formatPrice(
+            item.price
+          )} / ${bulkDisplay}</span>
+                      <span>${formatNumber(item.rawAmount)}</span>
+                  </div>
+                  <div class="modal-buyer-item-seller">${item.sellerName}</div>
+              `
+          modalBuyerItemsContainer.appendChild(itemElement)
+
+          totalRaw += item.rawAmount
+        })
+
+        modalBuyerTotalRaw.textContent = formatNumber(totalRaw)
+
+        buyerModal.style.display = "block"
+      }
+
+      // Modal event listeners (Seller Modal)
+      modalCloseBtn.addEventListener("click", () => closeModal("seller"))
+
+      modalPaidBtn.addEventListener("click", () => {
+        if (currentModalSellerIndex >= 0) {
+          toggleSellerPaidStatus(currentModalSellerIndex)
+        }
+      })
+
+      modalEditBtn.addEventListener("click", () => {
+        if (currentModalSellerIndex >= 0) {
+          loadSellerForEdit(currentModalSellerIndex)
+        }
+      })
+
+      modalDeleteBtn.addEventListener("click", () => {
+        if (currentModalSellerIndex >= 0) {
+          deleteSeller(currentModalSellerIndex)
+        }
+      })
+
+      // Modal event listeners (Buyer Modal)
+      modalBuyerCloseBtn.addEventListener("click", () => closeModal("buyer"))
+
+      // Close modals when clicking outside
+      window.addEventListener("click", (e) => {
+        if (e.target === sellerModal) {
+          closeModal("seller")
+        }
+        if (e.target === buyerModal) {
+          closeModal("buyer")
+        }
+      })
+
+      // Tab button event listeners
+      calcBtn.addEventListener("click", showCalculatorView)
+
+      sellersBtn.addEventListener("click", () => {
+        calcBtn.classList.remove("active")
+        buyersBtn.classList.remove("active")
+        sellersBtn.classList.add("active")
+        calculatorView.style.display = "none"
+        buyersView.style.display = "none"
+        listView.style.display = "flex"
+        showSellersList()
+      })
+
+      buyersBtn.addEventListener("click", () => {
+        calcBtn.classList.remove("active")
+        sellersBtn.classList.remove("active")
+        buyersBtn.classList.add("active")
+        calculatorView.style.display = "none"
+        listView.style.display = "none"
+        overallSellersSummaryEl.style.display = "none"
+        deleteAllSellersBtn.style.display = "none"
+        buyersView.style.display = "flex"
+        showBuyersList()
+      })
+
+      // Delete all sellers button event listener
+      deleteAllSellersBtn.addEventListener("click", deleteAllSellers)
+
+      // Search input event listeners
+      sellerSearchInput.addEventListener("input", () => {
+        showSellersList()
+      })
+
+      buyerSearchInput.addEventListener("input", () => {
+        showBuyersList()
+      })
+
+      // Initialize with one empty item and hide list views initially
+      items.push(createItem())
+      renderItems()
+      overallSellersSummaryEl.style.display = "none"
+      deleteAllSellersBtn.style.display = "none"
+    </script>
+  </body>
+</html>
