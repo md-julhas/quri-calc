@@ -3,8 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>QuriCalc</title>
-    <link rel="icon" href="image/fav.png" type="image/png" />
+    <title>Index | QuriCalc</title>
     <style>
       /* CSS Variables */
       :root {
@@ -102,6 +101,7 @@
         border-radius: var(--radius-md);
         padding: 0.5rem 0.5rem;
         margin-bottom: 1rem;
+        overflow: hidden;
       }
 
       .seller-input {
@@ -715,6 +715,125 @@
         border-color: var(--light-border);
       }
 
+      /* New styles for buyer name input container */
+      .buyer-name-input-container {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-grow: 1;
+        flex-wrap: nowrap;
+        overflow: hidden;
+      }
+
+      .buyer-name-input-container input {
+        flex-grow: 1;
+        flex-shrink: 1;
+        min-width: 0;
+      }
+
+      .list-buyer-btn {
+        margin: 0;
+        padding: 0.76rem 2rem;
+        font-size: var(--text-sm);
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        background: #101733;
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        flex-shrink: 0;
+        width: auto;
+      }
+
+      /* New Buyer List Modal Styles */
+      .buyer-list-modal .modal-content {
+        padding-top: 1rem;
+      }
+
+      .buyer-list-modal .modal-title {
+        color: var(--text);
+      }
+
+      .buyer-modal-list-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        max-height: 40vh;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+      }
+
+      .buyer-modal-list-grid-item {
+        background-color: var(--bg);
+        border-radius: var(--radius-sm);
+        padding: 0.75rem 1rem;
+        font-size: var(--text-xl);
+        color: var(--primary);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        text-align: center;
+        word-break: break-word;
+        border: 1px solid var(--bg);
+        position: relative;
+      }
+
+      .buyer-modal-list-grid-item:hover {
+        background-color: #101733;
+        border-color: var(--primary);
+      }
+
+      .buyer-modal-list-grid-item .delete-buyer-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: none;
+        border: none;
+        color: var(--border);
+        font-size: 1.2rem;
+        padding: 0.2rem 0.4rem;
+        line-height: 1;
+        cursor: pointer;
+        transition: color 0.2s ease;
+        opacity: 0;
+        pointer-events: none;
+        margin: 0;
+        width: auto;
+        box-shadow: none;
+      }
+
+      .buyer-modal-list-grid-item:hover .delete-buyer-btn {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .buyer-modal-list-grid-item .delete-buyer-btn:hover {
+        color: var(--danger);
+      }
+
+      .buyer-list-modal .modal-footer {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--light-border);
+      }
+
+      .buyer-list-modal .modal-footer input {
+        flex: 1;
+        flex-shrink: 1;
+        min-width: 0;
+      }
+
+      .buyer-list-modal .modal-footer button {
+        flex-shrink: 0;
+        width: auto;
+        padding: 0.8rem 1rem;
+        margin: 0;
+      }
+
       /* Responsive adjustments */
       @media (max-width: 480px) {
         input.quantity-input {
@@ -727,6 +846,10 @@
 
         .bulk-btn {
           padding: 0.9rem 0.5rem;
+        }
+
+        .list-buyer-btn {
+          padding: 0.9rem 2rem;
         }
 
         .modal-content {
@@ -870,6 +993,28 @@
       </div>
     </div>
 
+    <div id="buyer-list-selection-modal" class="modal buyer-list-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Select Buyer</h2>
+          <button class="modal-close" id="buyer-list-selection-close">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="buyer-modal-list-grid" class="buyer-modal-list-grid"></div>
+        </div>
+        <div class="modal-footer">
+          <input
+            type="text"
+            id="new-buyer-name-input"
+            placeholder="Add new buyer name"
+          />
+          <button id="save-new-buyer-name-btn">Save</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       // Data structures
       let items = []
@@ -879,6 +1024,7 @@
       let currentModalSellerIndex = -1
       let originalSellerSavedAt = null
       let originalSellerNameForEdit = null
+      let currentBuyerNameInputEl = null
 
       // DOM Elements
       const itemsContainer = document.getElementById("items-container")
@@ -947,6 +1093,21 @@
         "modal-buyer-total-raw"
       )
       const modalBuyerCloseBtn = document.getElementById("modal-buyer-close")
+
+      // New Buyer List Selection Modal Elements
+      const buyerListSelectionModal = document.getElementById(
+        "buyer-list-selection-modal"
+      )
+      const buyerListSelectionCloseBtn = document.getElementById(
+        "buyer-list-selection-close"
+      )
+      const buyerModalListGrid = document.getElementById(
+        "buyer-modal-list-grid"
+      )
+      const newBuyerNameInput = document.getElementById("new-buyer-name-input")
+      const saveNewBuyerNameBtn = document.getElementById(
+        "save-new-buyer-name-btn"
+      )
 
       // Functions
       /**
@@ -1049,28 +1210,16 @@
 
       /**
        * Renders all items in the `items` array to the UI.
-       * @param {boolean} [focusLast=false] - Whether to focus on the last item's buyer name input after rendering.
+       * @param {boolean} [focusLastQuantity=false] - Whether to focus on the last item's quantity input after rendering.
        */
-      function renderItems(focusLast = false) {
+      function renderItems(focusLastQuantity = false) {
         itemsContainer.innerHTML = ""
 
         items.forEach((item, index) => {
           const card = document.createElement("div")
           card.className = "card"
 
-          const buyerInputRow = document.createElement("div")
-          buyerInputRow.className = "input-row"
-
-          const buyerNameInput = document.createElement("input")
-          buyerNameInput.type = "text"
-          buyerNameInput.className = "buyer-name-input"
-          buyerNameInput.placeholder = "Buyer name (optional)"
-          buyerNameInput.value = item.buyerName ?? ""
-          buyerNameInput.addEventListener("input", (e) => {
-            item.buyerName = e.target.value.trim()
-          })
-          buyerInputRow.appendChild(buyerNameInput)
-
+          // Input Row: Quantity, Price, and Quad buttons
           const inputRow = document.createElement("div")
           inputRow.className = "input-row"
 
@@ -1096,14 +1245,6 @@
             calculateItemAmounts(item)
             updateSummary()
             updateItemDisplay(card, item)
-          })
-
-          priceInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === "Next") {
-              if (index === items.length - 1) {
-                addBtn.click()
-              }
-            }
           })
 
           const bulkOptions = document.createElement("div")
@@ -1147,6 +1288,66 @@
           inputRow.appendChild(priceInput)
           inputRow.appendChild(bulkOptions)
 
+          // Buyer Name Row: This now comes AFTER the quantity/price row
+          const buyerInputRow = document.createElement("div")
+          buyerInputRow.className = "input-row"
+          buyerInputRow.style.marginTop = "0.5rem"
+
+          const buyerNameInputContainer = document.createElement("div")
+          buyerNameInputContainer.className = "buyer-name-input-container"
+
+          const buyerNameInput = document.createElement("input")
+          buyerNameInput.type = "text"
+          buyerNameInput.className = "buyer-name-input"
+          buyerNameInput.placeholder = "Buyer name (optional)"
+          buyerNameInput.value = item.buyerName ?? ""
+          buyerNameInput.addEventListener("input", (e) => {
+            item.buyerName = e.target.value.trim()
+          })
+
+          const listBuyerBtn = document.createElement("button")
+          listBuyerBtn.className = "list-buyer-btn"
+          listBuyerBtn.textContent = "List"
+          listBuyerBtn.addEventListener("click", () => {
+            currentBuyerNameInputEl = buyerNameInput
+            showBuyerListSelectionModal()
+          })
+
+          buyerNameInputContainer.appendChild(buyerNameInput)
+          buyerNameInputContainer.appendChild(listBuyerBtn)
+          buyerInputRow.appendChild(buyerNameInputContainer)
+
+          // Keydown listeners for sequential navigation
+          quantityInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === "Next") {
+              e.preventDefault()
+              priceInput.focus()
+            }
+          })
+
+          priceInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === "Next") {
+              e.preventDefault()
+              buyerNameInput.focus()
+            }
+          })
+
+          buyerNameInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === "Next") {
+              e.preventDefault()
+              if (index === items.length - 1) {
+                items.push(createItem())
+                renderItems(true)
+              } else {
+                const nextQuantityInput =
+                  document.querySelectorAll(".quantity-input")[index + 1]
+                if (nextQuantityInput) {
+                  nextQuantityInput.focus()
+                }
+              }
+            }
+          })
+
           const results = document.createElement("div")
           results.className = "calculator-item-results"
 
@@ -1170,13 +1371,15 @@
                 )}</div>
               </div>
             `
-          card.appendChild(buyerInputRow)
+          // Append in the correct order: inputRow (qty/price), then buyerInputRow, then results
           card.appendChild(inputRow)
+          card.appendChild(buyerInputRow)
           card.appendChild(results)
           itemsContainer.appendChild(card)
 
-          if (focusLast && index === items.length - 1) {
-            setTimeout(() => buyerNameInput.focus(), 0)
+          // Focus on the quantity input of the last added item if focusLastQuantity is true
+          if (focusLastQuantity && index === items.length - 1) {
+            setTimeout(() => quantityInput.focus(), 0)
           }
         })
 
@@ -1255,7 +1458,7 @@
 
         sellersData.push({
           sellerName,
-          commissionPercent: commissionPercent, // Save the current global commissionPercent
+          commissionPercent: commissionPercent,
           items: items.map((i) => ({
             quantity: i.quantity,
             price: i.price,
@@ -1279,8 +1482,8 @@
         items = [createItem()]
         sellerName = ""
         currentGlobalBulkOption = "9"
-        originalSellerSavedAt = null // Reset for next operation
-        originalSellerNameForEdit = null // Reset original seller name
+        originalSellerSavedAt = null
+        originalSellerNameForEdit = null
         renderItems()
         updateSummary()
       })
@@ -1402,12 +1605,12 @@
           items = sellerToEdit.items.map((item) => ({ ...item }))
           originalSellerSavedAt = sellerToEdit.savedAt
           originalSellerNameForEdit = sellerToEdit.sellerName
-
           // Recalculate items using the original commissionPercent from saved data
           items.forEach((item) => {
             const bulkValue = item.bulkOption === "8" ? 72 : 64
             item.rawAmount =
               ((item.price || 0) * (item.quantity || 0)) / bulkValue
+            // Use the seller's *saved* commissionPercent for edit view calculations
             item.commission =
               item.rawAmount * ((sellerToEdit.commissionPercent || 10) / 100)
             item.netAmount = item.rawAmount - item.commission
@@ -1679,7 +1882,7 @@
 
       /**
        * Closes a specific modal.
-       * @param {string} type - The type of modal to close ("seller" or "buyer").
+       * @param {string} type - The type of modal to close ("seller", "buyer", or "buyer-list").
        */
       function closeModal(type) {
         if (type === "seller") {
@@ -1688,6 +1891,11 @@
         }
         if (type === "buyer") {
           buyerModal.style.display = "none"
+        }
+        if (type === "buyer-list") {
+          buyerListSelectionModal.style.display = "none"
+          currentBuyerNameInputEl = null
+          newBuyerNameInput.value = ""
         }
       }
 
@@ -1705,7 +1913,6 @@
         // Collect all buyer items from all sellers
         sellersData.forEach((seller) => {
           seller.items.forEach((item) => {
-            // Add sellerName to each item for display in buyer modal
             allBuyerItems.push({
               ...item,
               sellerName: seller.sellerName,
@@ -1775,7 +1982,6 @@
         buyersArray.forEach((buyerGroup, groupIndex) => {
           const buyerDiv = document.createElement("div")
           buyerDiv.className = "list-item"
-          // Simplified list item to only show buyer name and total raw
           buyerDiv.innerHTML = `
               <div class="list-item-header">
                 <span class="buyer-name">${buyerGroup.buyerName}</span>
@@ -1810,7 +2016,7 @@
        * @param {string} buyerName - The name of the buyer to display details for.
        */
       function showBuyerModal(buyerName) {
-        const allBuyersData = filterBuyers("") // Get all buyer items from sellers data
+        const allBuyersData = filterBuyers("")
         const itemsForThisBuyer = allBuyersData.filter(
           (item) => (item.buyerName || "Unknown Buyer") === buyerName
         )
@@ -1850,6 +2056,116 @@
         buyerModal.style.display = "block"
       }
 
+      // New Feature: Buyer List Selection Modal Functions
+      /**
+       * Loads the list of saved buyer names from local storage.
+       * @returns {Array<string>} An array of buyer names.
+       */
+      function loadBuyersList() {
+        return JSON.parse(localStorage.getItem("buyersList") || "[]")
+      }
+
+      /**
+       * Saves the current list of buyer names to local storage.
+       * @param {Array<string>} buyers - The array of buyer names to save.
+       */
+      function saveBuyersList(buyers) {
+        localStorage.setItem("buyersList", JSON.stringify(buyers))
+      }
+
+      /**
+       * Adds a new buyer name to the buyers list in local storage.
+       * @param {string} name - The buyer name to add.
+       */
+      function addBuyerToList(name) {
+        let buyers = loadBuyersList()
+        const trimmedName = name.trim()
+        if (trimmedName && !buyers.includes(trimmedName)) {
+          buyers.push(trimmedName)
+          buyers.sort()
+          saveBuyersList(buyers)
+        }
+      }
+
+      /**
+       * Removes a buyer name from the buyers list in local storage.
+       * @param {string} name - The buyer name to remove.
+       */
+      function removeBuyerFromList(name) {
+        showCustomConfirm(
+          `Are you sure you want to delete "${name}" from the buyer list?`,
+          () => {
+            let buyers = loadBuyersList()
+            buyers = buyers.filter((b) => b !== name)
+            saveBuyersList(buyers)
+            renderBuyerListForSelection()
+          }
+        )
+      }
+
+      /**
+       * Renders the list of buyer names in the buyer list selection modal.
+       */
+      function renderBuyerListForSelection() {
+        const buyers = loadBuyersList()
+        buyerModalListGrid.innerHTML = ""
+
+        if (buyers.length === 0) {
+          buyerModalListGrid.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;">No saved buyers.</div>`
+          return
+        }
+
+        buyers.forEach((buyerName) => {
+          const buyerItemDiv = document.createElement("div")
+          buyerItemDiv.className = "buyer-modal-list-grid-item"
+          buyerItemDiv.textContent = buyerName
+          buyerItemDiv.title = buyerName
+
+          // Add delete button
+          const deleteBtn = document.createElement("button")
+          deleteBtn.className = "delete-buyer-btn"
+          deleteBtn.innerHTML = "&times;"
+          deleteBtn.title = `Delete ${buyerName}`
+          deleteBtn.addEventListener("click", (e) => {
+            e.stopPropagation()
+            removeBuyerFromList(buyerName)
+          })
+          buyerItemDiv.appendChild(deleteBtn)
+
+          buyerItemDiv.addEventListener("click", () => {
+            if (currentBuyerNameInputEl) {
+              currentBuyerNameInputEl.value = buyerName
+              const event = new Event("input", { bubbles: true })
+              currentBuyerNameInputEl.dispatchEvent(event)
+            }
+            closeModal("buyer-list")
+          })
+          buyerModalListGrid.appendChild(buyerItemDiv)
+        })
+      }
+
+      /**
+       * Opens the buyer list selection modal.
+       */
+      function showBuyerListSelectionModal() {
+        renderBuyerListForSelection()
+        buyerListSelectionModal.style.display = "block"
+      }
+
+      /**
+       * Handles saving a new buyer name from the modal input.
+       */
+      function saveNewBuyerName() {
+        const name = newBuyerNameInput.value.trim()
+        if (name) {
+          addBuyerToList(name)
+          newBuyerNameInput.value = ""
+          renderBuyerListForSelection()
+        } else {
+          showCustomAlert("Please enter a name to save.")
+        }
+      }
+
       // Modal event listeners (Seller Modal)
       modalCloseBtn.addEventListener("click", () => closeModal("seller"))
 
@@ -1874,6 +2190,17 @@
       // Modal event listeners (Buyer Modal)
       modalBuyerCloseBtn.addEventListener("click", () => closeModal("buyer"))
 
+      // New Buyer List Selection Modal Event Listeners
+      buyerListSelectionCloseBtn.addEventListener("click", () =>
+        closeModal("buyer-list")
+      )
+      saveNewBuyerNameBtn.addEventListener("click", saveNewBuyerName)
+      newBuyerNameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          saveNewBuyerName()
+        }
+      })
+
       // Close modals when clicking outside
       window.addEventListener("click", (e) => {
         if (e.target === sellerModal) {
@@ -1881,6 +2208,9 @@
         }
         if (e.target === buyerModal) {
           closeModal("buyer")
+        }
+        if (e.target === buyerListSelectionModal) {
+          closeModal("buyer-list")
         }
       })
 
