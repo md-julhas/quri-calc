@@ -11,14 +11,14 @@ You can view the live demo of the QuriCalc App [Click Here](https://quricalc.ver
 ## Solutions Overview
 
 - Automatically calculate the price per bundle based on local terms such as Choli type (8 or 9 quad), number of pairs, and price per quri.
-- Generate invoices for sellers, buyers with multiple purchases
+- Generate invoices for sellers, buyers with multiple purchases.
 - Used LocalStorage to temporarily store transaction data during active market sessions—specifically for collecting payments from buyers and making payments to sellers.
-- Supports adding, editing, and deleting sellers
+- Supports adding, editing, and deleting sellers.
 - Summarize total sales, total commission (market organizer’s profit), and total payouts to sellers.
 - Track all sellers and buyers with integrated search functionality.
-- Runs offline from a single index.html file that powers the entire app, giving a smooth mobile app experience
+- Runs offline from a single index.html file that powers the entire app, giving a smooth mobile app experience.
 - Reduces hume error-prone and speeds up calculation time.
-- Mobile-first design – optimized for smartphones commonly used by market accountants
+- Mobile-first design – optimized for smartphones commonly used by market accountants.
 
 ## Tech Stack
 
