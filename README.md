@@ -1,4 +1,4 @@
-# QuriCalc – Fast and Accurate Calculation App for Local Betel Leaf Markets
+# QuriCalc – Fast and Accurate Calculation App for Betel Leaf Markets
 
 ## Overview
 
