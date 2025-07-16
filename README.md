@@ -36,4 +36,4 @@ In the market, sellers arrive with one or more bundles of betel leaves. Each bun
 
 ## Solutions
 
-To solve the manual calculation challenges, I built a simple app that automates pricing, commission, and payouts. By entering the bundle quantity, quri price, and choli type, the app instantly calculates totals for buyers and sellers. It supports multiple sellers and bundles, reducing errors and saving time in the market's daily operations.
+To solve this challenges, I built a simple app that automates pricing, commission, and payouts. By entering the bundle quantity, quri price, and choli type, the app instantly calculates totals for buyers and sellers. It supports multiple sellers and bundles, reducing errors and saving time in the market's daily operations.
